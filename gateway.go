@@ -31,6 +31,7 @@ func (s *AcceptSerevr) runProxy(port string) *http.Server {
 type Proxy struct{}
 
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	in := time.Now()
 	var ip string
 	ips := parseIpAddr(r)
 	if len(ips) == 0 {
@@ -48,6 +49,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	//转发
 	p.doProxy(w, r)
+	log.Print("time all cost", time.Now().Sub(in).Seconds(), "s")
 }
 func (p *Proxy) blackList(ip string) error {
 	return nil
