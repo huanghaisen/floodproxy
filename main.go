@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
@@ -13,19 +15,29 @@ import (
 const defaultConfigFile = "resource/config.yaml"
 
 func main() {
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	log.Print("starting floodproxy")
-	sigs := make(chan os.Signal, 1)
-	stop := make(chan struct{})
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM) // Push signals into channel
+	//wg := &sync.WaitGroup{}
+	//wg.Add(1)
+	//log.Print("starting floodproxy")
+	//sigs := make(chan os.Signal, 1)
+	//stop := make(chan struct{})
+	//signal.Notify(sigs, os.Interrupt, syscall.SIGTERM) // Push signals into channel
+	//
+	//go run(stop, wg)
+	//
+	//sig := <-sigs
+	//log.Printf("Shutting down... %+v", sig)
+	//close(stop) // Tell goroutines to stop themselves
+	//wg.Wait()
+	InitConfig(defaultConfigFile)
 
-	go run(stop, wg)
+	//运行服务
+	srv := new(AcceptSerevr)
+	srv.runProxy("8009")
 
+	sigs := make(chan os.Signal)
+	signal.Notify(sigs, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	sig := <-sigs
-	log.Printf("Shutting down... %+v", sig)
-	close(stop) // Tell goroutines to stop themselves
-	wg.Wait()
+	log.Print("Shutting down... %v", sig)
 }
 func accessControl(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,4 +63,29 @@ func run(stopCh <-chan struct{}, wg *sync.WaitGroup) {
 func sayHello(w http.ResponseWriter, r *http.Request) {
 	//n, err := fmt.Fprintln(w, "hello world")
 	_, _ = w.Write([]byte("hello world"))
+}
+
+func InitConfig(configUrl string) {
+	fmt.Println("==================== begin initialise config ====================")
+	v := viper.New()
+	v.SetConfigFile(configUrl)
+	err := v.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+	v.WatchConfig()
+
+	v.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("config file changed:", e.Name)
+		if err := v.Unmarshal(&FloodDataConfig); err != nil {
+			fmt.Println(err)
+		}
+	})
+	if err := v.Unmarshal(&FloodDataConfig); err != nil {
+		fmt.Println(err)
+	}
+	FloodDataViper = v
+	fmt.Println("FloodDataViper:", FloodDataViper)
+	fmt.Println("FloodDataConfig:", FloodDataConfig)
+	fmt.Println("==================== end initialise config ====================")
 }
