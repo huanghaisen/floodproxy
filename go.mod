@@ -1,3 +1,3 @@
-module fast_proxy
+module floodproxy
 
 go 1.13
