@@ -3,42 +3,43 @@ package main
 import (
 	"floodproxy/pkg/loadbalance"
 	"fmt"
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
 const defaultConfigFile = "resource/config.yaml"
 
 func main() {
-	//wg := &sync.WaitGroup{}
-	//wg.Add(1)
-	//log.Print("starting floodproxy")
-	//sigs := make(chan os.Signal, 1)
-	//stop := make(chan struct{})
-	//signal.Notify(sigs, os.Interrupt, syscall.SIGTERM) // Push signals into channel
-	//
-	//go run(stop, wg)
-	//
-	//sig := <-sigs
-	//log.Printf("Shutting down... %+v", sig)
-	//close(stop) // Tell goroutines to stop themselves
-	//wg.Wait()
-	InitConfig(defaultConfigFile)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	log.Print("starting floodproxy")
+	sigs := make(chan os.Signal, 1)
+	stop := make(chan struct{})
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM) // Push signals into channel
+
+	go run(stop, wg)
+
+	sig := <-sigs
+	log.Printf("Shutting down... %+v", sig)
+	close(stop) // Tell goroutines to stop themselves
+	wg.Wait()
+	//InitConfig(defaultConfigFile)
 
 	//运行服务
-	srv := new(AcceptSerevr)
-	srv.runProxy("8009")
+	// srv := new(AcceptSerevr)
+	// srv.runProxy("8009")
 
-	sigs := make(chan os.Signal)
-	signal.Notify(sigs, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	sig := <-sigs
-	log.Print("Shutting down... %v", sig)
+	// sigs := make(chan os.Signal)
+	// signal.Notify(sigs, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	// sig := <-sigs
+	// log.Print("Shutting down... %v", sig)
 }
 func accessControl(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
