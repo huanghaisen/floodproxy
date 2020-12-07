@@ -1,2 +1,4 @@
 github.com/g4zhuj/hashring v0.0.0-20180426073119-5d542568fdbd h1:FjwbWhR+yxNuQrGWu6/bN76+TlbMxDFUgjj0FcCyFDs=
 github.com/g4zhuj/hashring v0.0.0-20180426073119-5d542568fdbd/go.mod h1:9zdNtZS41ZZRfkQBuvhJxk/tKVdJewHxaUNajTPTUAU=
+github.com/serialx/hashring v0.0.0-20200727003509-22c0c7ab6b1b h1:h+3JX2VoWTFuyQEo87pStk/a99dzIO1mM9KxIyLPGTU=
+github.com/serialx/hashring v0.0.0-20200727003509-22c0c7ab6b1b/go.mod h1:/yeG0My1xr/u+HZrFQ1tOQQQQrOawfyMUH13ai5brBc=
