@@ -5,6 +5,6 @@ system:
   appName: floodproxy
 httpProxy:
   - target: target1
-    proxypass: http://127.0.0.1:54436
+    proxypass: http://172.16.5.132:8006
   - target: target2
-    proxypass: http://127.0.0.1:54436
+    proxypass: http://172.16.5.132:8006

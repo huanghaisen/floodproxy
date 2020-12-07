@@ -1,6 +1,7 @@
 package main
 
 import (
+	"floodproxy/pkg/loadbalance"
 	"github.com/spf13/viper"
 )
 
@@ -9,4 +10,5 @@ var (
 	FloodDataConfig *Server
 	// FloodDataViper ：
 	FloodDataViper *viper.Viper
+	HostInfo       *loadbalance.HostInfo
 )

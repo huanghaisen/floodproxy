@@ -70,7 +70,7 @@ func (p *Proxy) doProxy(w http.ResponseWriter, r *http.Request) {
 	log.Print("time cost", time.Now().Sub(in).Seconds(), "s")
 }
 func (p *Proxy) getRoute(req *http.Request) string {
-	return ""
+	return "http://10.201.0.142:8889"
 }
 func newReverseProxy(target *url.URL) *httputil.ReverseProxy {
 	director := func(req *http.Request) {
