@@ -9,6 +9,7 @@ type System struct {
 	Host     string `json:"host" yaml:"host"`
 	Port     int    `json:"port" yaml:"port"`
 	LogLevel string `json:"log_level" yaml:"LogLevel"`
+	Startby  int    `json:"startby" yaml:"startby"`
 }
 type HttpProxy struct {
 	Target    string `json:"target" yaml:"target"`

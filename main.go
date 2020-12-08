@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sync"
+	"strconv"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
@@ -17,29 +17,24 @@ import (
 const defaultConfigFile = "resource/config.yaml"
 
 func main() {
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	log.Print("starting floodproxy")
-	sigs := make(chan os.Signal, 1)
-	stop := make(chan struct{})
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM) // Push signals into channel
-
-	go run(stop, wg)
-
-	sig := <-sigs
-	log.Printf("Shutting down... %+v", sig)
-	close(stop) // Tell goroutines to stop themselves
-	wg.Wait()
-	//InitConfig(defaultConfigFile)
-
-	//运行服务
-	// srv := new(AcceptSerevr)
-	// srv.runProxy("8009")
-
-	// sigs := make(chan os.Signal)
-	// signal.Notify(sigs, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	// sig := <-sigs
-	// log.Print("Shutting down... %v", sig)
+	InitConfig(defaultConfigFile)
+	if FloodDataConfig.System.Startby == 1 {
+		log.Print("starting flood server")
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, os.Interrupt, syscall.SIGTERM) // Push signals into channel
+		go run()
+		sig := <-sigs
+		log.Printf("Shutting down... %+v", sig)
+	} else {
+		log.Print("starting proxy server")
+		//运行服务
+		srv := new(AcceptSerevr)
+		srv.runProxy(strconv.Itoa(FloodDataConfig.System.Port))
+		sigs := make(chan os.Signal)
+		signal.Notify(sigs, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+		sig := <-sigs
+		log.Print("Shutting down... %v", sig)
+	}
 }
 func accessControl(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -47,24 +42,24 @@ func accessControl(h http.Handler) http.Handler {
 		h.ServeHTTP(w, r)
 	})
 }
-func run(stopCh <-chan struct{}, wg *sync.WaitGroup) {
-	defer wg.Done()
+func run() {
 	go func() {
 		//mux := http.NewServeMux()
 		http.HandleFunc("/", sayHello)
 		//http.HandleFunc("/hello", accessControl(mux))
-		listen := fmt.Sprintf("%s:%d", "0.0.0.0", 8006)
+		listen := fmt.Sprintf("%s:%d", "0.0.0.0", FloodDataConfig.System.Port)
 		fmt.Println("HTTP server run on ", listen)
 		if err := http.ListenAndServe(listen, nil); err != nil {
 			log.Println(err.Error())
 		}
 		log.Println("end")
 	}()
-	<-stopCh
 }
 func sayHello(w http.ResponseWriter, r *http.Request) {
 	//n, err := fmt.Fprintln(w, "hello world")
-	_, _ = w.Write([]byte("hello world"))
+	var result = "hello world"
+	log.Print(result)
+	_, _ = w.Write([]byte(result))
 }
 
 func InitConfig(configUrl string) {

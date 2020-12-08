@@ -3,8 +3,9 @@ system:
   port: 8009
   LogLevel: all
   appName: floodproxy
+  startby: 0
 httpProxy:
   - target: target1
     proxypass: http://10.201.2.32:8080
   - target: target2
-    proxypass: http://10.201.2.33:8080
+    proxypass: http://10.201.2.32:8080
