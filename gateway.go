@@ -7,7 +7,6 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
-	"time"
 )
 
 type AcceptSerevr struct{}
@@ -32,26 +31,26 @@ type Proxy struct {
 }
 
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	in := time.Now()
-	var ip string
-	ips := parseIpAddr(r)
-	if len(ips) == 0 {
-		log.Print("ips", ips)
-		return
-	}
-	ip = ips[0]
-	log.Print(" accept request from ip ", ip)
-	if err := p.blackList(ip); err != nil {
-		log.Print("error", err)
-	}
-
-	if err := p.whiteList(ip); err != nil {
-		log.Print("error", err)
-	}
+	//in := time.Now()
+	//var ip string
+	//ips := parseIpAddr(r)
+	//if len(ips) == 0 {
+	//	log.Print("ips", ips)
+	//	return
+	//}
+	//ip = ips[0]
+	//log.Print(" accept request from ip ", ip)
+	//if err := p.blackList(ip); err != nil {
+	//	log.Print("error", err)
+	//}
+	//
+	//if err := p.whiteList(ip); err != nil {
+	//	log.Print("error", err)
+	//}
 	//转发
 
 	p.doProxy(w, r)
-	log.Print("time all cost", time.Now().Sub(in).Seconds(), "s")
+	//log.Print("time all cost", time.Now().Sub(in).Seconds(), "s")
 }
 func (p *Proxy) blackList(ip string) error {
 	return nil
@@ -70,9 +69,9 @@ func (p *Proxy) doProxy(w http.ResponseWriter, r *http.Request) {
 	proxy := newReverseProxy(target)
 
 	//todo 基于响应时间做负载优化
-	in := time.Now()
+	//in := time.Now()
 	proxy.ServeHTTP(w, r)
-	log.Print("time cost", time.Now().Sub(in).Seconds(), "s")
+	//log.Print("time cost", time.Now().Sub(in).Seconds(), "s")
 }
 func (p *Proxy) getRoute(req *http.Request) string {
 	return HostInfo.GetTarget(req)
