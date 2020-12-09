@@ -91,7 +91,7 @@ func newReverseProxy(target *url.URL) *httputil.ReverseProxy {
 			req.Header.Set("User-Agent", "")
 		}
 		req.Header["X-Real-Ip"] = parseIpAddr(req)
-		log.Print("X-Real-Ip=", req.Header["X-Real-Ip"])
+		//log.Print("X-Real-Ip=", req.Header["X-Real-Ip"])
 	}
 	return &httputil.ReverseProxy{Director: director}
 }
