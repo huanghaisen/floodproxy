@@ -61,6 +61,7 @@ func (p *Proxy) whiteList(ip string) error {
 func (p *Proxy) doProxy(w http.ResponseWriter, r *http.Request) {
 	//defer wg.Done()
 	route := p.getRoute(r)
+	log.Print("target", route)
 	target, err := url.Parse(route)
 	if err != nil {
 		log.Print(" get route err ", err)

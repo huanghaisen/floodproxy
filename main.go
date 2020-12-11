@@ -95,6 +95,7 @@ func LoadHost() *loadbalance.HostInfo {
 	for _, proxy := range FloodDataConfig.HttpProxy {
 		hostInfo.MultiTarget = append(hostInfo.MultiTarget, proxy.Proxypass)
 	}
-	hostInfo.MultiTargetMode = 2
+	hostInfo.MultiTargetMode = 1
+	hostInfo.Length = len(hostInfo.MultiTarget)
 	return hostInfo
 }
